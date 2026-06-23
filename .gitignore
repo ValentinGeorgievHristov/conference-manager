@@ -1,0 +1,16 @@
+gitignore### .NET Ignore ###
+# Ignore bin and obj folders everywhere in the project
+**/bin/
+**/obj/
+
+# Ignore the hidden Visual Studio configuration directory
+**/.vs/
+
+# Ignore local development configuration files
+**/appsettings.Development.json
+
+### Angular Ignore (For future use) ###
+# Ignore dependency packages and build outputs
+**/node_modules/
+**/.angular/
+**/dist/
