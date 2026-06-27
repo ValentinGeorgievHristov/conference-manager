@@ -3,6 +3,7 @@ using System;
 using ConferenceManager.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ConferenceManager.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260625091345_AddRegistrationAuditFields")]
+    partial class AddRegistrationAuditFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,32 +52,6 @@ namespace ConferenceManager.API.Migrations
                     b.ToTable("Conferences");
                 });
 
-            modelBuilder.Entity("ConferenceManager.API.Models.PromoterProfile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("ReferralCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("PromoterProfiles");
-                });
-
             modelBuilder.Entity("ConferenceManager.API.Models.Registration", b =>
                 {
                     b.Property<int>("Id")
@@ -95,17 +72,8 @@ namespace ConferenceManager.API.Migrations
                     b.Property<bool>("IsConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("PromoterId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PromoterProfileId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("SourceType")
-                        .HasColumnType("integer");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -113,8 +81,6 @@ namespace ConferenceManager.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ConferenceId");
-
-                    b.HasIndex("PromoterProfileId");
 
                     b.HasIndex("UserId");
 
@@ -150,17 +116,6 @@ namespace ConferenceManager.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ConferenceManager.API.Models.PromoterProfile", b =>
-                {
-                    b.HasOne("ConferenceManager.API.Models.User", "User")
-                        .WithOne("PromoterProfile")
-                        .HasForeignKey("ConferenceManager.API.Models.PromoterProfile", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ConferenceManager.API.Models.Registration", b =>
                 {
                     b.HasOne("ConferenceManager.API.Models.Conference", "Conference")
@@ -169,10 +124,6 @@ namespace ConferenceManager.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ConferenceManager.API.Models.PromoterProfile", "PromoterProfile")
-                        .WithMany()
-                        .HasForeignKey("PromoterProfileId");
-
                     b.HasOne("ConferenceManager.API.Models.User", "User")
                         .WithMany("Registrations")
                         .HasForeignKey("UserId")
@@ -180,8 +131,6 @@ namespace ConferenceManager.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Conference");
-
-                    b.Navigation("PromoterProfile");
 
                     b.Navigation("User");
                 });
@@ -193,8 +142,6 @@ namespace ConferenceManager.API.Migrations
 
             modelBuilder.Entity("ConferenceManager.API.Models.User", b =>
                 {
-                    b.Navigation("PromoterProfile");
-
                     b.Navigation("Registrations");
                 });
 #pragma warning restore 612, 618

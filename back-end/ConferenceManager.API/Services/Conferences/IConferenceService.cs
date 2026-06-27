@@ -1,8 +1,8 @@
-﻿using ConferenceManager.API.DTOs.Conferences;
-using ConferenceManager.API.Models;
-
+﻿
 namespace ConferenceManager.API.Services.Conferences
 {
+    using ConferenceManager.API.DTOs.Conferences;
+
     public interface IConferenceService
     {
         void CreateConference(CreateConferenceDto dto, int userId);
@@ -10,12 +10,8 @@ namespace ConferenceManager.API.Services.Conferences
 
         List<ConferenceDto> GetAllConferences();
 
-        bool UpdateConference(
-            int conferenceId, 
-            UpdateConferenceDto dto,
-            int currentUserId,
-            bool isAdmin);
-
+        bool UpdateConference(int conferenceId, UpdateConferenceDto dto, int currentUserId, bool isAdmin);
         string DeleteConference(int conferenceId, int currentUserId, bool isAdmin);
+        ConferenceStatsDto GetConferenceStats(int conferenceId);
     }
 }

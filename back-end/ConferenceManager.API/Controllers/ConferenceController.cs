@@ -1,11 +1,13 @@
-﻿using ConferenceManager.API.DTOs.Conferences;
-using ConferenceManager.API.Services.Conferences;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-
-namespace ConferenceManager.API.Controllers
+﻿namespace ConferenceManager.API.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+
+    using System.Security.Claims;
+
+    using ConferenceManager.API.DTOs.Conferences;
+    using ConferenceManager.API.Services.Conferences;
+
     [ApiController]
     [Route("api/[controller]")]
     public class ConferenceController : ControllerBase
@@ -65,7 +67,7 @@ namespace ConferenceManager.API.Controllers
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if(userIdClaim == null)
+            if (userIdClaim == null)
             {
                 return Unauthorized();
             }
@@ -81,7 +83,7 @@ namespace ConferenceManager.API.Controllers
                     currentUserId,
                     isAdmin);
 
-            if(!updated)
+            if (!updated)
             {
                 return Forbid();
             }
@@ -104,7 +106,7 @@ namespace ConferenceManager.API.Controllers
 
             var isAdmin = User.IsInRole("Admin");
 
-            var result  = _conferenceService.DeleteConference(
+            var result = _conferenceService.DeleteConference(
                 id, currentUserId, isAdmin);
 
             if (result == "NotFound")
@@ -119,5 +121,14 @@ namespace ConferenceManager.API.Controllers
 
             return Ok("Conference deleted");
         }
-}
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("{id}/stats")]
+        public IActionResult GetStats(int id)
+        {
+            var result = _conferenceService.GetConferenceStats(id);
+
+            return Ok(result);
+        }
+    }
 }

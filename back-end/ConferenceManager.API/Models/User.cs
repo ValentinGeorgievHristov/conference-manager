@@ -11,5 +11,9 @@
         public string PasswordHash { get; set; } = string.Empty;
 
         public string Role { get; set; } = "User";
+
+        public List<Registration> Registrations { get; set; } = new();
+
+        public PromoterProfile? PromoterProfile { get; set; }
     }
 }

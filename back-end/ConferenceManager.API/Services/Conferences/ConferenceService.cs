@@ -98,5 +98,23 @@ namespace ConferenceManager.API.Services.Conferences
 
             return "Deleted";
         }
+
+        public ConferenceStatsDto GetConferenceStats(int conferenceId)
+        {
+            var registrations = _context.Registrations
+                .Where(r => r.ConferenceId == conferenceId);
+
+            var total = registrations.Count();
+            var confirmed = registrations.Count(r => r.IsConfirmed);
+
+            return new ConferenceStatsDto
+            {
+                ConferenceId = conferenceId,
+                Total = total,
+                Confirmed = confirmed,
+                Unconfirmed = total - confirmed
+            };
+
+        }
     }
 }

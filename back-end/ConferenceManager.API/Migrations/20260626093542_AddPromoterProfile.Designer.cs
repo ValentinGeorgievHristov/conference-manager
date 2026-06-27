@@ -3,6 +3,7 @@ using System;
 using ConferenceManager.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ConferenceManager.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260626093542_AddPromoterProfile")]
+    partial class AddPromoterProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,9 +101,6 @@ namespace ConferenceManager.API.Migrations
                     b.Property<int?>("PromoterId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("PromoterProfileId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -113,8 +113,6 @@ namespace ConferenceManager.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ConferenceId");
-
-                    b.HasIndex("PromoterProfileId");
 
                     b.HasIndex("UserId");
 
@@ -169,10 +167,6 @@ namespace ConferenceManager.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ConferenceManager.API.Models.PromoterProfile", "PromoterProfile")
-                        .WithMany()
-                        .HasForeignKey("PromoterProfileId");
-
                     b.HasOne("ConferenceManager.API.Models.User", "User")
                         .WithMany("Registrations")
                         .HasForeignKey("UserId")
@@ -180,8 +174,6 @@ namespace ConferenceManager.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Conference");
-
-                    b.Navigation("PromoterProfile");
 
                     b.Navigation("User");
                 });

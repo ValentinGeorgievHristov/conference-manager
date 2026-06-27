@@ -1,27 +1,20 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
-using ConferenceManager.API.Data;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using ConferenceManager.API.Services.Users;
+
+using System.Text;
+
+using ConferenceManager.API.Services.Registrations;
 using ConferenceManager.API.Services.Conferences;
+using ConferenceManager.API.Services.Promoters;
+using ConferenceManager.API.Services.Users;
+using ConferenceManager.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-//При всяка заявка с JWT:
-
-//Authorization: Bearer eyJhbGciOi...
-
-//ASP.NET ще провери:
-
-//✓ Подписът валиден ли е?
-//✓ Issuer = ConfManagerApi ?
-//✓ Audience = ConfManagerClient ?
-//✓ Изтекъл ли е токенът?
-//✓ Подписан ли е със същия Secret Key?
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -95,6 +88,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IConferenceService, ConferenceService>();
+
+builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+
+builder.Services.AddScoped<IPromoterService, PromoterService>();
 
 var app = builder.Build();
 
