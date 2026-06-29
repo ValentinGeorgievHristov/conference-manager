@@ -124,3 +124,42 @@ The registration endpoint returns:
   "warning": null
 }
 ```
+
+File & Image Management
+User Profile Images
+* Authenticated users can upload a profile image
+* Images are uploaded directly through the API (multipart/form-data)
+* Files are stored in wwwroot/images
+* Each file is saved with a unique GUID-based filename
+* The generated image URL is stored in the user profile (ProfileImageUrl)
+* Users can update their own profile image via /me/profile-image
+* Administrators can update profile images for users (if extended in future)
+
+* Conference Images
+* Conference owners and administrators can upload a conference image
+* Images are uploaded directly through the API (multipart/form-data)
+* Files are stored in wwwroot/images
+* Each file is saved with a unique GUID-based filename
+* The generated image URL is stored in the conference (ImageUrl)
+* Ownership validation ensures only:
+  * Conference owner OR
+  * Administrator
+* Endpoint: PUT /api/conference/{id}/image
+
+
+Storage Strategy
+* All uploaded files are stored locally in wwwroot/images
+* Filenames are generated using GUID to avoid collisions
+* Static file middleware exposes images via URL access
+* URLs are stored in the database and returned via API responses
+ 
+Database Fields
+
+User
+* ProfileImageUrl – stores the profile image URL
+
+Conference
+* ImageUrl – stores the conference image URL
+
+Example Image URL
+* /images/b3aa66ff-4350-440c-a702-d9632823e501.png

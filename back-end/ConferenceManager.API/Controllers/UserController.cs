@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Authorization;
 
     using System.Security.Claims;
-    
+
     using ConferenceManager.API.Services.Users;
     using ConferenceManager.API.DTOs.Users;
 
@@ -14,10 +14,14 @@
     {
 
         private readonly IUserService _userService;
+        private readonly IWebHostEnvironment _env;
 
-        public UserController(IUserService userService)
+        public UserController(
+               IUserService userService,
+               IWebHostEnvironment env)
         {
             _userService = userService;
+            _env = env;
         }
 
         [Authorize(Roles = "Admin")]
@@ -96,12 +100,44 @@
             {
                 return NotFound("User not found.");
             }
-            
+
             return Ok("User updated.");
         }
 
+        [Authorize]
+        [HttpPut("me/profile-image")]
+        public async Task<IActionResult> UpdateMyProfileImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded");
+            }
 
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+       
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "images");
 
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var url = $"/images/{fileName}";
+
+            var result = _userService.UpdateUserImage(userId, url);
+
+            if (!result)
+                return NotFound("User not found");
+
+            return Ok(new { url });
+        }
 
     }
 }

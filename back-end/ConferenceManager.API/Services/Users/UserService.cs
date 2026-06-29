@@ -135,5 +135,21 @@
 
             return true;
         }
+
+        public bool UpdateUserImage(int userId, string imageUrl)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.ProfileImageUrl = imageUrl;
+
+            _context.SaveChanges();
+
+            return true;
+        }
     }
 }

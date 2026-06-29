@@ -8,5 +8,6 @@
         public DateTime Date { get; set; }
         public int UserId { get; set; }
         public List<Registration> Registrations { get; set; } = new();
+        public string? ImageUrl { get; set; }
     }
 }

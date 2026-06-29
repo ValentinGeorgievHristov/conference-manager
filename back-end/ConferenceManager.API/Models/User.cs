@@ -15,5 +15,8 @@
         public List<Registration> Registrations { get; set; } = new();
 
         public PromoterProfile? PromoterProfile { get; set; }
+
+        public string? ProfileImageUrl { get; set; }
+
     }
 }

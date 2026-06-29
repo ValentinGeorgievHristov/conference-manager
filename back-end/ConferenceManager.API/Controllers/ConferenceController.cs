@@ -1,22 +1,24 @@
 ﻿namespace ConferenceManager.API.Controllers
 {
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-
-    using System.Security.Claims;
-
     using ConferenceManager.API.DTOs.Conferences;
     using ConferenceManager.API.Services.Conferences;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using System.Security.Claims;
 
     [ApiController]
     [Route("api/[controller]")]
     public class ConferenceController : ControllerBase
     {
         private readonly IConferenceService _conferenceService;
+        private readonly IWebHostEnvironment _env;
 
-        public ConferenceController(IConferenceService conferenceService)
+        public ConferenceController(IConferenceService conferenceService,
+            IWebHostEnvironment env)
         {
             _conferenceService = conferenceService;
+            _env = env;
         }
 
         [Authorize]
@@ -129,6 +131,68 @@
             var result = _conferenceService.GetConferenceStats(id);
 
             return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPut("{id}/image")]
+        public async Task<IActionResult> UpdateConferenceImage(int id, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded");
+            }
+
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var isAdmin = User.IsInRole("Admin");
+
+            var conference = _conferenceService.GetConferenceById(id);
+
+            if (conference == null)
+            {
+                return NotFound("Conference not found");
+            }
+
+            var isOwner = conference.UserId == userId;
+
+            if (!isOwner && !isAdmin)
+            {
+                return Forbid();
+            }
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "images");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var url = $"/images/{fileName}";
+
+            var result = _conferenceService.UpdateConferenceImage(
+                id,
+                url,
+                userId,
+                isAdmin);
+
+            if (!result)
+            {
+                return Forbid();
+            }
+
+            return Ok(new
+            {
+                url
+            });
         }
     }
 }

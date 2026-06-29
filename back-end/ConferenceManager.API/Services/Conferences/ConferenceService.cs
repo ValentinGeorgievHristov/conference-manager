@@ -87,10 +87,11 @@ namespace ConferenceManager.API.Services.Conferences
                 return "NotFound";
             }
 
-            if(conference.UserId != currentUserId && !isAdmin)
+            if (conference.UserId != currentUserId && !isAdmin)
             {
                 return "Forbidden";
-            };
+            }
+            ;
 
             _context.Conferences.Remove(conference);
 
@@ -115,6 +116,35 @@ namespace ConferenceManager.API.Services.Conferences
                 Unconfirmed = total - confirmed
             };
 
+        }
+
+        public bool UpdateConferenceImage(int conferenceId, string imageUrl, int currentUserId, bool isAdmin)
+        {
+            var conference = _context.Conferences
+                .FirstOrDefault(c => c.Id == conferenceId);
+
+            if (conference == null)
+            {
+                return false;
+            }
+
+            var isOwner = conference.UserId == currentUserId;
+
+            if (!isOwner && !isAdmin)
+            {
+                return false;
+            }
+
+            conference.ImageUrl = imageUrl;
+
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public Conference? GetConferenceById(int id)
+        {
+            return _context.Conferences.FirstOrDefault(c => c.Id == id);
         }
     }
 }

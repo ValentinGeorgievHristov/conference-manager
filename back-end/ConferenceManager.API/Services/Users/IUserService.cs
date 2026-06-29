@@ -15,6 +15,8 @@
 
         bool UpdateUser(int id, CreateUserDto dto);
 
+        bool UpdateUserImage(int userId, string imageUrl);
+
     }
 }
 
